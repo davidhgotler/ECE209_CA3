@@ -9,8 +9,8 @@ parser = ArgumentParser("Script to (compile and) run simulations for all or some
 parser.add_argument("-c","--compile",action="store_true",help="compile = select if you would like to recompile at runtime")
 parser.add_argument("-f","--filename",action="store",help="filename = model file path to recompile. Only applicable if compile is true.")
 parser.add_argument("-t","--traces",action="store",nargs="+",default=["all"],help="traces = path(s) to trace files, or 'all' to run all in traces folder.")
-parser.add_argument("-v","--verbose",action="store_true",help="verbose = print command outputs")
-parser.add_argument("-d","--debug",action="store_true",help="debug = print extra debug info")
+parser.add_argument("-v","--verbose",action="store_true",help="verbose = print extra runtime info")
+parser.add_argument("-d","--debug",action="store_true",help="debug = print extra debug info such as command outputs")
 
 args = parser.parse_args()
 compile_cmd = f"g++ -Wall --std=c++11 -o lru-config1".split() 
