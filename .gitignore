@@ -1,1 +1,5 @@
 .vscode/settings.json
+logs/run_bzip2_10M.trace.gz.log
+logs/run_graph_analytics_10M.trace.gz.log
+logs/run_libquantum_10M.trace.gz.log
+logs/run_mcf_10M.trace.gz.log

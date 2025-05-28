@@ -23,19 +23,19 @@
 #define LLC_SETS NUM_CORE*2048
 #define LLC_WAYS 16
 
-#define RRPV_MAX 3
+#define RRPV_MAX 7
 #define NUM_POLICY 2
-#define SDM_SIZE 32             // leader set count per policy per core
+#define SDM_SIZE 32 // leader set count per policy per core
 #define TOTAL_SDM_SET NUM_POLICY*SDM_SIZE
 // #define MAX_BIP 32
 // #define PSEL_WIDTH 10
-#define PSEL_MAX 7
-#define PSEL_INIT (PSEL_MAX / 2)
+#define PSEL_MAX 511
+#define PSEL_INIT (PSEL_MAX / 2) // start in srrip
 
 uint32_t rrpv[LLC_SETS][LLC_WAYS];
 
 // int bip_counter = 0;
-double brrip_eps = 0.25;
+double brrip_eps = 0.1;
 
 int psel = PSEL_INIT;               // 0 is SRRIP, PSEL_MAX is BRRIP
 vector<uint32_t> brrip_leader_sets;
@@ -111,16 +111,16 @@ void UpdateReplacementState (uint32_t cpu, uint32_t set, uint32_t way, uint64_t 
     // global_access_counter++;
     // if(global_access_counter >= next_phase_start){
     //     // penalize psel towards center but don't switch mode
-    //     if(psel > PSEL_MAX/2) psel = max(PSEL_MAX/2 , psel-(psel >> 2));
-    //     else psel = min(PSEL_MAX/2, psel+((PSEL_MAX-psel) >> 2));
+    //     if(psel > PSEL_MAX/2) psel = PSEL_INIT+1;
+    //     else psel = PSEL_INIT;
     //     next_phase_start += PHASE_LENGTH;
     // }
 
     if(type == WRITEBACK){
-        rrpv[set][way] = RRPV_MAX - 1;
+        rrpv[set][way] = RRPV_MAX - 2;
         return;
     }
-
+    // cout << "psel = " << psel << endl;
     if(hit){
         rrpv[set][way] = 0;
         // reward psel if is a leader
@@ -150,7 +150,7 @@ void UpdateReplacementState (uint32_t cpu, uint32_t set, uint32_t way, uint64_t 
         else if(is_srrip_leader(set)){
             // cout << "entered SRRIP SDM set" << endl;
             psel = min(PSEL_MAX, psel + 1);
-            rrpv[set][way] = RRPV_MAX-1;
+            rrpv[set][way] = RRPV_MAX-2;
         }
         // Update follower buffers according to current policy
         else
@@ -166,10 +166,10 @@ void UpdateReplacementState (uint32_t cpu, uint32_t set, uint32_t way, uint64_t 
             }
             // SRRIP
             else{
-                rrpv[set][way] = RRPV_MAX-1;
+                rrpv[set][way] = RRPV_MAX-2;
             }
         }
-        
+        return;
     }
 }
 

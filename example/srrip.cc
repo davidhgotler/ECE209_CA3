@@ -49,10 +49,17 @@ uint32_t GetVictimInSet (uint32_t cpu, uint32_t set, const BLOCK *current_set, u
 // called on every cache hit and cache fill
 void UpdateReplacementState (uint32_t cpu, uint32_t set, uint32_t way, uint64_t paddr, uint64_t PC, uint64_t victim_addr, uint32_t type, uint8_t hit)
 {
+    if (type==WRITEBACK)
+    {
+        rrpv[set][way] = maxRRPV-1;
+        return;
+    }
+
     if (hit)
         rrpv[set][way] = 0;
     else
         rrpv[set][way] = maxRRPV-1;
+    return;
 }
 
 // use this function to print out your own stats on every heartbeat 

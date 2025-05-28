@@ -35,8 +35,7 @@ else:
         if os.path.exists(trace):
             traces.append(trace)
 
-accesses = []
-misses = []
+miss_rate_list = []
 processes = []
 
 lognames = ["logs/run_"+trace.split("/")[-1]+".log" for trace in traces]
@@ -78,12 +77,11 @@ if os.path.exists("lru-config1"):
                 if args.verbose and not args.debug:
                     print(logname.removeprefix("logs/run_").removesuffix(".log") + ":\n\t" + line)
                 line = line.split()
-                accesses.append(int(line[3]))
-                misses.append(int(line[7].replace(',','')))
-                
-total_accesses = np.sum(accesses)
-total_misses = np.sum(misses)
-if args.verbose:
-    print(f"total accesses = {total_accesses}")
-    print(f"total misses = {total_misses}")
-print(f"miss rate = {total_misses/total_accesses}")
+                accesses = int(line[3])
+                misses = int(line[7].replace(',',''))
+                miss_rate_list.append(misses/accesses)
+                if args.verbose:
+                    print(f"miss rate = {miss_rate_list[-1]}")
+
+avg_miss_rate = np.mean(miss_rate_list)
+print(f"average miss rate = {avg_miss_rate}")
