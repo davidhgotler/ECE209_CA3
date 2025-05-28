@@ -37,24 +37,50 @@ else:
 
 accesses = []
 misses = []
+processes = []
+
+lognames = ["logs/run_"+trace.split("/")[-1]+".log" for trace in traces]
+logs = []
+for log in lognames:
+    logs.append(open(log,"w"))
+
 if os.path.exists("lru-config1"):
-    for trace in traces:
+    # run all traces in parallel
+    for trace,log in zip(traces,logs):
         if args.verbose:
-            print(f'running on {trace}...')
-        with open("tmp","w") as tmp:
-            subprocess.call(trace_command+[trace], stdout=tmp)
-        with open("tmp","r") as fp:
-            lines = fp.read().splitlines()
-            for line in lines:
-                if args.debug:
-                    print(line)
-                if "LLC TOTAL" in line:
-                    if args.verbose:
-                        print(line)
-                    line = line.split()
-                    accesses.append(int(line[3]))
-                    misses.append(int(line[7].replace(',','')))
-os.remove("tmp")
+            print(f'starting {trace}...')
+            processes.append(subprocess.Popen(trace_command+[trace], stdout=log, text=True))
+    
+    # wait for all to complete
+    running = True
+    while running:
+        completed = 0
+        for proc in processes:
+            if proc.poll()!=None:
+                completed+=1
+        if completed==len(processes):
+            running=False
+    
+    if args.verbose:
+        print("All traces complete")
+
+    # close and reopen log files in read mode
+    for log in logs:
+        log.close()
+
+    for logname in lognames:
+        with open(logname,"r") as log:
+            lines = log.read().splitlines()
+        for line in lines:
+            if args.debug:
+                print(line)
+            if "LLC TOTAL" in line:
+                if args.verbose and not args.debug:
+                    print(logname.removeprefix("logs/run_").removesuffix(".log") + ":\n\t" + line)
+                line = line.split()
+                accesses.append(int(line[3]))
+                misses.append(int(line[7].replace(',','')))
+                
 total_accesses = np.sum(accesses)
 total_misses = np.sum(misses)
 if args.verbose:

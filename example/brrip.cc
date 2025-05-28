@@ -6,7 +6,7 @@
 ////////////////////////////////////////////
 //
 #include <cstdlib>
-#include "inc/champsim_crc2.h"
+#include "../inc/champsim_crc2.h"
 
 #define NUM_CORE 1
 #define LLC_SETS NUM_CORE*2048
@@ -14,7 +14,7 @@
 
 #define maxRRPV 3
 uint32_t rrpv[LLC_SETS][LLC_WAYS];
-uint64_t eps = 0.1;
+double eps = 0.9;
 // uint32_t instr_cnt = 0;
 // uint32_t hit_cnt   = 0;
 // uint32_t miss_cnt  = 0;
