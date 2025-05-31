@@ -18,15 +18,16 @@
 #include <cassert>
 #include <iostream>
 #include <algorithm>
+#include <ctime>
 
 #define NUM_CORE 1
 #define LLC_SETS NUM_CORE*2048
 #define LLC_WAYS 16
 
 #define RRPV_MAX 7
-#define NUM_POLICY 2
+// #define NUM_POLICY 2
 #define SDM_SIZE 32 // leader set count per policy per core
-#define TOTAL_SDM_SET NUM_POLICY*SDM_SIZE
+// #define TOTAL_SDM_SET NUM_POLICY*SDM_SIZE
 // #define MAX_BIP 32
 // #define PSEL_WIDTH 10
 #define PSEL_MAX 127
@@ -42,9 +43,9 @@ vector<uint32_t> brrip_leader_sets;
 vector<uint32_t> srrip_leader_sets;
 
 // try a more dynamic psel counter
-uint64_t PHASE_LENGTH = 32;
-uint64_t global_access_counter = 0;
-uint64_t next_phase_start = PHASE_LENGTH;
+// uint64_t PHASE_LENGTH = 32;
+// uint64_t global_access_counter = 0;
+// uint64_t next_phase_start = PHASE_LENGTH;
 
 // helper functions to check if the cache set is either policy leader
 bool is_leader(const vector<uint32_t>& leaders, uint32_t set){
@@ -68,10 +69,12 @@ void InitReplacementState()
     }
 
     // set random seed
-    mt19937 rng(5);
+    mt19937 rng(42);
+    // mt19937 rng(time(NULL));
     uniform_int_distribution<int> dist(0, LLC_SETS - 1);
     set<int> used;
-    srand(6); // for brrip
+    srand(3); // for brrip
+    // srand(time(NULL));
 
     // randomly select the BRRIP leader set
     while(brrip_leader_sets.size() < SDM_SIZE){
@@ -120,7 +123,7 @@ void UpdateReplacementState (uint32_t cpu, uint32_t set, uint32_t way, uint64_t 
         rrpv[set][way] = RRPV_MAX - 1;
         return;
     }
-    cout << "psel = " << psel << endl;
+    // cout << "psel = " << psel << endl;
     if(hit){
         rrpv[set][way] = 0;
         // reward psel if is a leader

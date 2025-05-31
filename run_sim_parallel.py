@@ -48,7 +48,7 @@ if os.path.exists("lru-config1"):
     for trace,log in zip(traces,logs):
         if args.verbose:
             print(f'starting {trace}...')
-            processes.append(subprocess.Popen(trace_command+[trace], stdout=log, text=True))
+        processes.append(subprocess.Popen(trace_command+[trace], stdout=log, text=True))
     
     # wait for all to complete
     running = True
