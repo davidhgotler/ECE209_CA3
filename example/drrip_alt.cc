@@ -36,7 +36,7 @@
 uint32_t rrpv[LLC_SETS][LLC_WAYS];
 
 // int bip_counter = 0;
-double brrip_eps = 0.1;
+double brrip_eps = 0.0;
 
 int psel = PSEL_INIT;               // 0 is SRRIP, PSEL_MAX is BRRIP
 vector<uint32_t> brrip_leader_sets;
@@ -69,7 +69,7 @@ void InitReplacementState()
     }
 
     // set random seed
-    mt19937 rng(42);
+    mt19937 rng(5);
     // mt19937 rng(time(NULL));
     uniform_int_distribution<int> dist(0, LLC_SETS - 1);
     set<int> used;
